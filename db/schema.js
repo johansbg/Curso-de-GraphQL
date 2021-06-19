@@ -16,6 +16,11 @@ const typeDefs = gql`
         token: String
     }
 
+    type TopVendedor {
+        total: Float
+        vendedor: [Usuario]
+    }
+
     # Productos Types
 
     type Producto {
@@ -36,6 +41,27 @@ const typeDefs = gql`
         telefono: String
         vendedor: ID
     }
+
+    type TopCliente {
+        total: Float
+        cliente: [Cliente]
+    }
+
+    # Pedido Type
+    type Pedido {
+        id: ID
+        pedido: [PedidoGrupo]
+        total: Float
+        cliente: ID
+        vendedor: ID
+        estado: EstadoPedido
+    }
+
+    type PedidoGrupo {
+        id: ID
+        cantidad: Int
+    }
+
     # Usuarios Input
 
     input UsuarioInput {
@@ -66,16 +92,47 @@ const typeDefs = gql`
         telefono: String
     }
 
+    # Pedidos Input
+    input PedidoProductoInput{
+        id: ID
+        cantidad: Int
+        nombre: String
+        precio: Float
+    }
+
+    input PedidoInput {
+        pedido: [PedidoProductoInput]
+        total: Float
+        cliente: ID
+        estado: EstadoPedido
+    }
+
+    # Enum Pedidos
+    enum EstadoPedido {
+        PENDIENTE
+        COMPLETADO
+        CANCELADO
+    }
+    
     type Query {
         # Usuarios
         obtenerUsuario(token: String!): Usuario
-        #Productos
+        # Productos
         obtenerProductos: [Producto]
         obtenerProducto(id: ID!): Producto
-        #Clientes
+        # Clientes
         obtenerClientes: [Cliente]
         obtenerClientesVendedor: [Cliente]
         obtenerCliente(id: ID!): Cliente
+        # Pedidos
+        obtenerPedidos: [Pedido]
+        obtenerPedidosVendedor: [Pedido]
+        obtenerPedido(id: ID!): Pedido
+        obtenerPedidosEstado(estado: String!): [Pedido]
+        # Busquedas Avanzadas
+        mejoresClientes: [TopCliente]
+        mejoresVendedores: [TopVendedor]
+        buscarProducto(texto: String!) : [Producto]
     }
 
     type Mutation {
@@ -88,8 +145,12 @@ const typeDefs = gql`
         eliminarProducto(id: ID!): String
         # Clientes
         nuevoCliente(input: ClienteInput): Cliente
-        actualizarCliente(id: ID!, input:ClienteInput): Cliente
+        actualizarCliente(id: ID!, input: ClienteInput): Cliente
         eliminarCliente(id: ID!): String
+        # Pedidos
+        nuevoPedido(input: PedidoInput): Pedido
+        actualizarPedido(id: ID!, input: PedidoInput ) : Pedido
+        eliminarPedido(id: ID!) : String
     }
 `;
 
